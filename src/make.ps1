@@ -27,8 +27,8 @@ rm cmain.o
 rm boot.bin
 rm padding.bin
 # rm cmain.bin
-rm settings/define.s
-rm settings/define.c
+rm settings/common_define.s
+rm settings/common_define.h
 
 
 

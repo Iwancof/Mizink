@@ -1,7 +1,7 @@
 ; MizinkOS
 ; Written by @Iwancof_ptr in 2020/4/28
 
-%include	"settings/define.s"
+%include	"settings/common_define.s"
 %include	"settings/macro.s"
 %include	"settings/structs.s"
 

@@ -1,7 +1,7 @@
      1                                  ; MizinkOS
      2                                  ; Written by @Iwancof_ptr in 2020/4/28
      3                                  
-     4                                  %include	"settings/define.s"
+     4                                  %include	"settings/common_define.s"
      1                              <1> SECT_SIZE	equ	512
      2                              <1> E820_RECORD_SIZE	equ	20
      3                              <1> BOOT_LOAD	equ	0x7C00

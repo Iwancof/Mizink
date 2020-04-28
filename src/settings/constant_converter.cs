@@ -9,8 +9,8 @@ class MainClass {
     string str = sr.ReadToEnd();
     sr.Close();
 
-    StreamWriter sw_NASM = new StreamWriter("define.s", false, Encoding.GetEncoding("Shift_JIS"));
-    StreamWriter sw_C = new StreamWriter("define.c", false, Encoding.GetEncoding("Shift_JIS"));
+    StreamWriter sw_NASM = new StreamWriter("common_define.s", false, Encoding.GetEncoding("Shift_JIS"));
+    StreamWriter sw_C = new StreamWriter("common_define.h", false, Encoding.GetEncoding("Shift_JIS"));
     
     str = str.Replace(" ","");
     str = str.Replace("\t","");

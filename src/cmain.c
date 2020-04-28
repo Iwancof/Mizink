@@ -1,8 +1,11 @@
-#include "settings/define.c"
+#include "settings/common_define.h"
 
-extern void outb(unsigned short port, unsigned char value);	// assembly
+#define VGA_SEQ_ADR (0x03C4)	// シーケンサのアドレスレジスタ
+
+extern void outb(unsigned short port, unsigned char value);
 extern void outw(unsigned short port, unsigned short value);
 extern void outd(unsigned short port, unsigned int value);
+// アセンブリで実装されてるやつら
 
 union xreg {
   struct {
@@ -16,7 +19,7 @@ void _start() {
   // Mizink main entry point
 
   union xreg value = {.x = 0x0702};
-  unsigned short port = 0x03C4;
+  unsigned short port = VGA_SEQ_ADR;
 
   outw(port, value.x);
 
