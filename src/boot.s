@@ -1,7 +1,7 @@
 ; MizinkOS
 ; Written by @Iwancof_ptr in 2020/4/28
 
-%include	"settings/defines.s"
+%include	"settings/define.s"
 %include	"settings/macro.s"
 %include	"settings/structs.s"
 
@@ -134,6 +134,10 @@ main_boot_program:
 	cdecl	KBC_Cmd_Write, 0xAE
 	; 再有効化
 	sti
+
+	mov	ax, 0x0012
+	int	0x10
+	; 10H:12H ビデオモードの変更。グラフィックモードにする。
 
 	; カーネルの読み込み処理
 	cdecl	read_lba, BOOT_DRIVE, BOOT_SECT, KERNEL_SECT, BOOT_END

@@ -1,26 +1,18 @@
      1                                  ; MizinkOS
      2                                  ; Written by @Iwancof_ptr in 2020/4/28
      3                                  
-     4                                  %include	"settings/defines.s"
-     1                              <1> 
-     2                              <1> ; Settings
-     3                              <1> SECT_SIZE		equ	512
-     4                              <1> E820_RECORD_SIZE	equ	20
-     5                              <1> 
-     6                              <1> ; Addresses
-     7                              <1> BOOT_LOAD	equ	0x7C00
-     8                              <1> BOOT_STACK	equ	BOOT_LOAD
-     9                              <1> BOOT_SIZE	equ	1024 * 8
-    10                              <1> BOOT_SECT	equ	BOOT_SIZE / SECT_SIZE
-    11                              <1> BOOT_END	equ	BOOT_LOAD + BOOT_SIZE
-    12                              <1> 
-    13                              <1> KERNEL_LOAD	equ	0x0001_0000
-    14                              <1> KERNEL_SIZE	equ	0x0000_6000
-    15                              <1> KERNEL_SECT	equ	KERNEL_SIZE / SECT_SIZE
-    16                              <1> KERNEL_END	equ	KERNEL_LOAD + KERNEL_SIZE
-    17                              <1> 
-    18                              <1> 
-    19                              <1> 
+     4                                  %include	"settings/define.s"
+     1                              <1> SECT_SIZE	equ	512
+     2                              <1> E820_RECORD_SIZE	equ	20
+     3                              <1> BOOT_LOAD	equ	0x7C00
+     4                              <1> BOOT_STACK	equ	BOOT_LOAD
+     5                              <1> BOOT_SIZE	equ	1024*8
+     6                              <1> BOOT_SECT	equ	BOOT_SIZE/SECT_SIZE
+     7                              <1> BOOT_END	equ	BOOT_LOAD+BOOT_SIZE
+     8                              <1> KERNEL_LOAD	equ	0x0001_0000
+     9                              <1> KERNEL_SIZE	equ	0x0000_6000
+    10                              <1> KERNEL_SECT	equ	KERNEL_SIZE/SECT_SIZE
+    11                              <1> KERNEL_END	equ	KERNEL_LOAD+KERNEL_SIZE
      5                                  %include	"settings/macro.s"
      1                              <1> %macro	cdecl	1-*.nolist
      2                              <1> 	%rep	%0 - 1
@@ -775,7 +767,7 @@
    102                                  	; BOOT_DRIVEに使っているドライブの情報を入れる
    103 0000067F 83F800                  	cmp	ax, 0
    104 00000682 750C                    	jne	.10E	; 成功
-   105 00000684 68[9307]E868FA83C4-     	cdecl	puts, errmsg_read_drive
+   105 00000684 68[9707]E868FA83C4-     	cdecl	puts, errmsg_read_drive
    105 0000068C 02                 
    106 0000068D E881FA                  	call	reboot
    107                                  .10E:
@@ -789,7 +781,7 @@
    114 000006A0 6683F800                	cmp	eax, 0
    115 000006A4 7409                    	je	.20E
    116                                  	; ACPI利用不可
-   117 000006A6 68[8207]E846FA83C4-     	cdecl	puts, msg_able_to_use_acpi
+   117 000006A6 68[8607]E846FA83C4-     	cdecl	puts, msg_able_to_use_acpi
    117 000006AE 02                 
    118                                  .20E:
    119                                  	; A20 有効化(KBCを使う)
@@ -798,10 +790,10 @@
    122                                  	; キーボードインターフェース無効
    123 000006B9 68D000E806FF83C402      	cdecl	KBC_Cmd_Write, 0xD0
    124                                  	; 出力ポート読み出し
-   125 000006C2 68[CF07]E81BFF83C4-     	cdecl	KBC_Data_Read, kbc_register_key
+   125 000006C2 68[D307]E81BFF83C4-     	cdecl	KBC_Data_Read, kbc_register_key
    125 000006CA 02                 
    126                                  
-   127 000006CB 8A1E[CF07]              	mov	bl, [kbc_register_key]
+   127 000006CB 8A1E[D307]              	mov	bl, [kbc_register_key]
    128 000006CF 80CB02                  	or	bl, 0x02
    129                                  	; KBCのレジスタのB2はA20有効化ビットになっている
    130 000006D2 68D100E8EDFE83C402      	cdecl	KBC_Cmd_Write, 0xD1
@@ -812,103 +804,107 @@
    135                                  	; 再有効化
    136 000006EB FB                      	sti
    137                                  
-   138                                  	; カーネルの読み込み処理
-   139 000006EC 68009C6A306A1068-       	cdecl	read_lba, BOOT_DRIVE, BOOT_SECT, KERNEL_SECT, BOOT_END
-   139 000006F4 [9E00]E847FF83C408 
-   140 000006FC 83F830                  	cmp	ax, KERNEL_SECT
-   141 000006FF 740C                    	jz	.30E
-   142 00000701 68[B207]E8EBF983C4-     	cdecl	puts, errmsg_read_kernel
-   142 00000709 02                 
-   143 0000070A E804FA                  	call	reboot
-   144                                  .30E:
-   145                                  	; カーネルの読み込みが完了
-   146                                  	; Protected-Modeへの移行を開始
-   147                                  
-   148 0000070D FA                      	cli
-   149 0000070E 0F0116[6C07]            	lgdt	[GDTR]	; GDTRをセット
-   150 00000713 0F011E[7207]            	lidt	[IDTR]
-   151 00000718 0F20C0                  	mov	eax, cr0
-   152                                  	; 制御レジスタを取得
-   153 0000071B 6683C801                	or	eax, 1
-   154                                  	; Protected-Mode有効化ビットを立てる
-   155 0000071F 0F22C0                  	mov	cr0, eax
-   156                                  
-   157 00000722 EB00                    	jmp	$ + 2
-   158                                  	; パイプラインの内容を破棄
-   159                                  
-   160                                  [BITS 32]	; 32bitモードの機械語の出力を指示
-   161 00000724 66                      	db	0x66
-   162                                  	; Real-Modeでe*xレジスタの使用を可能にするオーバーライドプレフィックス
-   163 00000725 EA[2C070000]0800        	jmp	SEL_CODE:CODE_32
-   164                                  	; ipを参照するときSEL_CODEをセグメントディスクリプタにする
-   165                                  CODE_32:
-   166 0000072C 66B81000                	mov	ax, SEL_DATA
-   167 00000730 8ED8                    	mov	ds, ax
-   168 00000732 8EC0                    	mov	es, ax
-   169 00000734 8EE0                    	mov	fs, ax
-   170 00000736 8EE8                    	mov	gs, ax
-   171 00000738 8ED0                    	mov	ss, ax
-   172                                  	; GS,SSはESのさらなる追加
-   173                                  
-   174                                  	; BOOT_ENDに追加されたメモリをKERNEL領域に書き込む
-   175 0000073A B900180000              	mov	ecx, (KERNEL_SIZE) / 4
-   176                                  	; バイト数を取得
-   177 0000073F BE009C0000              	mov	esi, BOOT_END
-   178                                  	; どこからコピーするか
-   179 00000744 BF00000100              	mov	edi, KERNEL_LOAD
-   180 00000749 FC                      	cld
-   181 0000074A F3A5                    	rep	movsd
-   182                                  
-   183 0000074C FF2500000100            	jmp	[KERNEL_LOAD]
-   184                                  
-   185 00000752 00<rept>                ALIGN	4,	db	0
-   186                                  ; 一時的なGDTを作成
-   187 00000754 0000000000000000        GDT:	dq	0x00_0000_000000_0000	; NULL
-   188 0000075C FFFF0000009ACF00        .cs:	dq	0x00_CF9A_000000_FFFF	; CODE(4G)
-   189 00000764 FFFF00000092CF00        .ds:	dq	0x00_CF92_000000_FFFF	; DATA(4G)
-   190                                  .gdt_end:
-   191                                  
-   192                                  SEL_CODE	equ	GDT.cs - GDT
-   193                                  SEL_DATA	equ	GDT.ds - GDT
-   194                                  ; 各ディスクリプタのセレクタ(GDTからのオフセット)
+   138 000006EC B81200                  	mov	ax, 0x0012
+   139 000006EF CD10                    	int	0x10
+   140                                  	; 10H:12H ビデオモードの変更。グラフィックモードにする。
+   141                                  
+   142                                  	; カーネルの読み込み処理
+   143 000006F1 68009C6A306A1068-       	cdecl	read_lba, BOOT_DRIVE, BOOT_SECT, KERNEL_SECT, BOOT_END
+   143 000006F9 [9E00]E842FF83C408 
+   144 00000701 83F830                  	cmp	ax, KERNEL_SECT
+   145 00000704 740C                    	jz	.30E
+   146 00000706 68[B607]E8E6F983C4-     	cdecl	puts, errmsg_read_kernel
+   146 0000070E 02                 
+   147 0000070F E8FFF9                  	call	reboot
+   148                                  .30E:
+   149                                  	; カーネルの読み込みが完了
+   150                                  	; Protected-Modeへの移行を開始
+   151                                  
+   152 00000712 FA                      	cli
+   153 00000713 0F0116[7007]            	lgdt	[GDTR]	; GDTRをセット
+   154 00000718 0F011E[7607]            	lidt	[IDTR]
+   155 0000071D 0F20C0                  	mov	eax, cr0
+   156                                  	; 制御レジスタを取得
+   157 00000720 6683C801                	or	eax, 1
+   158                                  	; Protected-Mode有効化ビットを立てる
+   159 00000724 0F22C0                  	mov	cr0, eax
+   160                                  
+   161 00000727 EB00                    	jmp	$ + 2
+   162                                  	; パイプラインの内容を破棄
+   163                                  
+   164                                  [BITS 32]	; 32bitモードの機械語の出力を指示
+   165 00000729 66                      	db	0x66
+   166                                  	; Real-Modeでe*xレジスタの使用を可能にするオーバーライドプレフィックス
+   167 0000072A EA[31070000]0800        	jmp	SEL_CODE:CODE_32
+   168                                  	; ipを参照するときSEL_CODEをセグメントディスクリプタにする
+   169                                  CODE_32:
+   170 00000731 66B81000                	mov	ax, SEL_DATA
+   171 00000735 8ED8                    	mov	ds, ax
+   172 00000737 8EC0                    	mov	es, ax
+   173 00000739 8EE0                    	mov	fs, ax
+   174 0000073B 8EE8                    	mov	gs, ax
+   175 0000073D 8ED0                    	mov	ss, ax
+   176                                  	; GS,SSはESのさらなる追加
+   177                                  
+   178                                  	; BOOT_ENDに追加されたメモリをKERNEL領域に書き込む
+   179 0000073F B900180000              	mov	ecx, (KERNEL_SIZE) / 4
+   180                                  	; バイト数を取得
+   181 00000744 BE009C0000              	mov	esi, BOOT_END
+   182                                  	; どこからコピーするか
+   183 00000749 BF00000100              	mov	edi, KERNEL_LOAD
+   184 0000074E FC                      	cld
+   185 0000074F F3A5                    	rep	movsd
+   186                                  
+   187 00000751 FF2500000100            	jmp	[KERNEL_LOAD]
+   188                                  
+   189 00000757 00                      ALIGN	4,	db	0
+   190                                  ; 一時的なGDTを作成
+   191 00000758 0000000000000000        GDT:	dq	0x00_0000_000000_0000	; NULL
+   192 00000760 FFFF0000009ACF00        .cs:	dq	0x00_CF9A_000000_FFFF	; CODE(4G)
+   193 00000768 FFFF00000092CF00        .ds:	dq	0x00_CF92_000000_FFFF	; DATA(4G)
+   194                                  .gdt_end:
    195                                  
-   196 0000076C 1700                    GDTR:	dw	GDT.gdt_end - GDT - 1
-   197 0000076E [54070000]              	dd	GDT
-   198                                  ; リミッタとアドレス
-   199 00000772 0000                    IDTR:	dw	0
-   200 00000774 00000000                	dd	0
-   201                                  ; リミッタが0なので割り込みは無効
-   202                                  
-   203                                  	
-   204 00000778 EBFE                    	jmp	$
-   205                                  
-   206 0000077A 7375636365737300        suc:			db	"success", 0
-   207 00000782 414350492061766169-     msg_able_to_use_acpi	db	"ACPI available", 0x0D, 0x0A, 0
-   207 0000078B 6C61626C650D0A00   
-   208                                  
-   209 00000793 436F756C64206E6F74-     errmsg_read_drive:	db	"Could not get drive parameter.", 0,
-   209 0000079C 206765742064726976-
-   209 000007A5 6520706172616D6574-
-   209 000007AE 65722E00           
-   210 000007B2 436F756C64206E6F74-     errmsg_read_kernel	db	"Could not load kernel binary", 0
-   210 000007BB 206C6F6164206B6572-
-   210 000007C4 6E656C2062696E6172-
-   210 000007CD 7900               
-   211 000007CF 0000                    kbc_register_key:	dw	0
+   196                                  SEL_CODE	equ	GDT.cs - GDT
+   197                                  SEL_DATA	equ	GDT.ds - GDT
+   198                                  ; 各ディスクリプタのセレクタ(GDTからのオフセット)
+   199                                  
+   200 00000770 1700                    GDTR:	dw	GDT.gdt_end - GDT - 1
+   201 00000772 [58070000]              	dd	GDT
+   202                                  ; リミッタとアドレス
+   203 00000776 0000                    IDTR:	dw	0
+   204 00000778 00000000                	dd	0
+   205                                  ; リミッタが0なので割り込みは無効
+   206                                  
+   207                                  	
+   208 0000077C EBFE                    	jmp	$
+   209                                  
+   210 0000077E 7375636365737300        suc:			db	"success", 0
+   211 00000786 414350492061766169-     msg_able_to_use_acpi	db	"ACPI available", 0x0D, 0x0A, 0
+   211 0000078F 6C61626C650D0A00   
    212                                  
-   213 000007D1 00<rept>                times	BOOT_SIZE - ($ - $$)	db	0
-   214                                  
-   215                                  ; Memory Map
-   216                                  ;+-------------+0
-   217                                  ;|interrupt+etc|
-   218                                  ;+-------------+??
-   219                                  ;|none or stack|
-   220                                  ;+-------------+07C00
-   221                                  ;|boot program |
-   222                                  ;+-------------+09C00
-   223                                  ;| copy kernel |
-   224                                  ;+-------------+0FC00
-   225                                  ;|   not use   |
-   226                                  ;+-------------+10000
-   227                                  ;| kernel code |
-   228                                  ;+-------------+
+   213 00000797 436F756C64206E6F74-     errmsg_read_drive:	db	"Could not get drive parameter.", 0,
+   213 000007A0 206765742064726976-
+   213 000007A9 6520706172616D6574-
+   213 000007B2 65722E00           
+   214 000007B6 436F756C64206E6F74-     errmsg_read_kernel	db	"Could not load kernel binary", 0
+   214 000007BF 206C6F6164206B6572-
+   214 000007C8 6E656C2062696E6172-
+   214 000007D1 7900               
+   215 000007D3 0000                    kbc_register_key:	dw	0
+   216                                  
+   217 000007D5 00<rept>                times	BOOT_SIZE - ($ - $$)	db	0
+   218                                  
+   219                                  ; Memory Map
+   220                                  ;+-------------+0
+   221                                  ;|interrupt+etc|
+   222                                  ;+-------------+??
+   223                                  ;|none or stack|
+   224                                  ;+-------------+07C00
+   225                                  ;|boot program |
+   226                                  ;+-------------+09C00
+   227                                  ;| copy kernel |
+   228                                  ;+-------------+0FC00
+   229                                  ;|   not use   |
+   230                                  ;+-------------+10000
+   231                                  ;| kernel code |
+   232                                  ;+-------------+
