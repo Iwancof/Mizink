@@ -10,6 +10,8 @@ union xreg {
   unsigned short x;
 };
 
+unsigned char* FONT_BASE;
+
 void vga_set_read_plane(unsigned char plane) {
   union xreg ax = {.high = plane & 3, .low = 0x04 };
   outw(VGA_GRA_ADR, ax.x);
@@ -48,5 +50,13 @@ void vram_font_copy(unsigned char* font_adr, unsigned char* vram_adr, unsigned c
     vram_adr += 80;
     // 一つ下のラインへ
   }
+}
+
+void vga_initialize() {
+  int font_segment = *(short*)(BOOT_LOAD + SECT_SIZE);
+  int font_offset = *(short*)(BOOT_LOAD + SECT_SIZE + 2);
+  int font_address = ((font_segment << 4) + font_offset) & 0xFFFFF;
+  // Real-Modeのアドレス計算法を再現。
+  FONT_BASE = (unsigned char*)font_address;
 }
 

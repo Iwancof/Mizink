@@ -14,6 +14,7 @@ $list = New-Object `System.Collections.Generic.List[string]`;
 # modules
 $list.Add("modules/protected/out.s");
 $list.Add("modules/protected/vga.c");
+$list.Add("modules/protected/draw.c");
 
 $index = 0;
 $cmd = "wsl i686-unknown-linux-gnu-ld -T settings/linker.ld -o cmain.bin cmain.o ";
