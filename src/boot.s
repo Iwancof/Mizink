@@ -186,6 +186,10 @@ CODE_32:
 
 	jmp	[KERNEL_LOAD]
 
+s0:	db	"--------", 0
+s1:	db	"--------", 0
+
+
 ALIGN	4,	db	0
 ; 一時的なGDTを作成
 GDT:	dq	0x00_0000_000000_0000	; NULL
@@ -203,10 +207,7 @@ GDTR:	dw	GDT.gdt_end - GDT - 1
 IDTR:	dw	0
 	dd	0
 ; リミッタが0なので割り込みは無効
-
 	
-	jmp	$
-
 suc:			db	"success", 0
 msg_able_to_use_acpi	db	"ACPI available", 0x0D, 0x0A, 0
 

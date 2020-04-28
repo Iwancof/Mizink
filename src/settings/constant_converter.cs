@@ -30,6 +30,9 @@ class MainClass {
     var ret = str.Split(':');
     if(ret.Length != 2)
       return "";
+    if(str[0] == '"' && str[1] == 'C' && str[2] == '"')
+      return "";
+    
     string name = ret[0];
     string value = ret[1];
     return String.Format("{0}	equ	{1}\n", name, value);
@@ -42,6 +45,9 @@ class MainClass {
       return "\n";
     string name = ret[0];
     string value = ret[1];
+    if(str[0] == '"' && str[1] == 'C' && str[2] == '"') {
+      name = name.Substring(3, name.Length - 3);
+    }
     return String.Format("#define	{0}	({1})\n", name, value);
   }
 }
