@@ -9,15 +9,21 @@ nasm boot.s -o boot.bin -l lists/boot.lst
 # main kernel
 wsl gcc cmain.c -nostdlib -nostdinc -c -O0 -g -m32 -o cmain.o -masm=intel
 
+# user land in rust
+rustc .\ul.rs --crate-type=staticlib -C lto -C opt-level=3 -C no-prepopulate-passes -Z verbose -Z no-landing-pads --target=i686-unknown-linux-gnu -o .\rmain.o --emit=obj -Ctarget-feature=+soft-float -C relocation-model=dynamic-no-pic
+
 $list = New-Object `System.Collections.Generic.List[string]`;
 
 # modules
 $list.Add("modules/protected/out.s");
 $list.Add("modules/protected/vga.c");
 $list.Add("modules/protected/draw.c");
+$list.Add("modules/protected/asm_wrap.s");
+$list.Add("modules/protected/kernel_panic.c");
+$list.Add("modules/protected/interrupt.c");
 
 $index = 0;
-$cmd = "wsl i686-unknown-linux-gnu-ld -T settings/linker.ld -o cmain.bin cmain.o ";
+$cmd = "wsl i686-unknown-linux-gnu-ld -T settings/linker.ld -o cmain.bin rmain.o cmain.o ";
 foreach($e in $list) {
   wsl gcc $e -c -g -m32 -o obj_$index.o -O0 -nostdlib -nostdinc
   $cmd += "obj_" + $index.ToString() + ".o ";
@@ -33,7 +39,8 @@ fsutil file createnew padding.bin $padding
 cmd /C copy /B boot.bin+cmain.bin+padding.bin Mizink.img
 
 #clear up
-rm cmain.o
+# rm cmain.o
+rm rmain.o
 rm boot.bin
 rm padding.bin
 rm cmain.bin

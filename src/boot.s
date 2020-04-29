@@ -175,6 +175,20 @@ CODE_32:
 	mov	ss, ax
 	; GS,SSはESのさらなる追加
 
+	lea	eax, [default_panic]
+	mov	ebx, 0x00088E00
+	xchg	ax, bx
+
+	mov	ecx, 256
+	mov	edi, VECT_BASE
+.40L:
+	mov	[edi + 0], ebx
+	mov	[edi + 4], eax
+	add	edi, 8
+	loop	.40L
+
+	lidt	[BOOT_END - 0x10]
+
 	; BOOT_ENDに追加されたメモリをKERNEL領域に書き込む
 	mov	ecx, (KERNEL_SIZE) / 4
 	; バイト数を取得
@@ -189,6 +203,9 @@ CODE_32:
 s0:	db	"--------", 0
 s1:	db	"--------", 0
 
+default_panic:
+	jmp	$
+
 
 ALIGN	4,	db	0
 ; 一時的なGDTを作成
@@ -197,16 +214,10 @@ GDT:	dq	0x00_0000_000000_0000	; NULL
 .ds:	dq	0x00_CF92_000000_FFFF	; DATA(4G)
 .gdt_end:
 
+; 各ディスクリプタのセレクタ(GDTからのオフセット)
 SEL_CODE	equ	GDT.cs - GDT
 SEL_DATA	equ	GDT.ds - GDT
-; 各ディスクリプタのセレクタ(GDTからのオフセット)
 
-GDTR:	dw	GDT.gdt_end - GDT - 1
-	dd	GDT
-; リミッタとアドレス
-IDTR:	dw	0
-	dd	0
-; リミッタが0なので割り込みは無効
 	
 suc:			db	"success", 0
 msg_able_to_use_acpi	db	"ACPI available", 0x0D, 0x0A, 0
@@ -214,6 +225,18 @@ msg_able_to_use_acpi	db	"ACPI available", 0x0D, 0x0A, 0
 errmsg_read_drive:	db	"Could not get drive parameter.", 0,
 errmsg_read_kernel	db	"Could not load kernel binary", 0
 kbc_register_key:	dw	0
+
+times	BOOT_SIZE - 0x1000 - ($ - $$)	db	0
+
+times	BOOT_SIZE - 0x20 - ($ - $$)	db	0
+; リミッタとアドレス
+GDTR:	dw	GDT.gdt_end - GDT - 1
+	dd	GDT
+times	BOOT_SIZE - 0x10 - ($ - $$)	db	0
+; 
+IDTR:	dw	256 * 8 - 1
+	dd	VECT_BASE
+
 
 times	BOOT_SIZE - ($ - $$)	db	0
 

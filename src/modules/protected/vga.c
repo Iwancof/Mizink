@@ -1,6 +1,11 @@
 
 #include "../../settings/common_define.h"
+#ifndef INCLUDED_KERNEL_HEADER
 #include "../kernel_modules.h"
+#endif
+
+unsigned char* FONT_BASE = 0;
+unsigned char* PANIC_MESSAGE = 0;
 
 union xreg {
   struct {
@@ -10,7 +15,6 @@ union xreg {
   unsigned short x;
 };
 
-unsigned char* FONT_BASE;
 
 void vga_set_read_plane(unsigned char plane) {
   union xreg ax = {.high = plane & 3, .low = 0x04 };

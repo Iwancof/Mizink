@@ -24,6 +24,19 @@ SECTIONS {
 	AT(LOADADDR(.data) + SIZEOF(.data)) SUBALIGN(4) {
 	  *(.bss*)
 	}
+	/*
+	.plt 0x00010000 + LOADADDR(.bss) + SIZEOF(.bss):
+	AT(LOADADDR(.bss) + SIZEOF(.bss)) SUBALIGN(4) {
+	  *(.plt*)
+	}
+	  */
+	/*
+	.else 0x00010000 + LOADADDR(.bss) + SIZEOF(.bss):
+	AT(LOADADDR(.bss) + SIZEOF(.bss)) SUBALIGN(4) {
+	  *(*)
+	}
+	  */
+	
 	/DISCARD/ : {
 	  *(*)
 	}

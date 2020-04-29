@@ -1,7 +1,9 @@
 #include "../../settings/common_define.h"
+#ifndef INCLUDED_KERNEL_HEADER
 #include "../kernel_modules.h"
+#endif
 
-void draw_char(unsigned int x, unsigned int y, unsigned short color, unsigned char ch) {
+void rk_draw_char(unsigned int x, unsigned int y, unsigned short color, unsigned char ch) {
   unsigned char* drawing_font_adr = FONT_BASE + (ch << 4);
   // 一つの文字あたり2^4 = 16byteなため
   unsigned char* drawing_vram_adr = VGA_IO_MEM_BASE + x + y * 80 * 16;
@@ -23,10 +25,10 @@ void draw_char(unsigned int x, unsigned int y, unsigned short color, unsigned ch
   // ループアンローリング(笑)
 }
 
-void draw_str(unsigned int x,unsigned int y, unsigned short color, char* str) {
+void rk_draw_str(unsigned int x,unsigned int y, unsigned short color, char* str) {
   char ch;
   while(ch = *str++) {
-    draw_char(x, y, color, ch);
+    rk_draw_char(x, y, color, ch);
     x += 1;
     y += x / 80;
     x %= 80;
