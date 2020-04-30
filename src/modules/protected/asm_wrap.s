@@ -24,3 +24,10 @@ set_idtr:
 	pop	ebp
 
 	ret
+
+.global asm_int_keyboard
+asm_int_keyboard:
+	pusha
+	call	int_keyboard
+	popa
+	iret

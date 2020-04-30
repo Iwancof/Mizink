@@ -1,3 +1,5 @@
+#include "../kernel_modules.h"
+
 .intel_syntax noprefix
 .code32
 
@@ -5,10 +7,16 @@
 outb:
 	push	ebp
 	mov	ebp, esp
+	
+	push	eax
+	push	ebx
 
 	mov	dx, [ebp + 8]
 	mov	al, [ebp +12]
 	out	dx, al
+	
+	pop	eax
+	pop	ebx
 
 	mov	esp, ebp
 	pop	ebp
@@ -39,11 +47,68 @@ outw:
 outd:
 	push	ebp
 	mov	ebp, esp
+	
+	push	eax
+	push	ebx
 
 	mov	dx,  [ebp + 8]
 	mov	eax, [ebp +12]
 	out	dx, eax
+	
+	pop	ebx
+	pop	eax
 
+	mov	esp, ebp
+	pop	ebp
+
+	ret
+
+.global inb
+inb:
+	push	ebp
+	mov	ebp, esp
+
+	push	edx
+	mov	eax, 0
+
+	mov	dx, [ebp + 8]
+	in	al, dx
+
+	pop	edx
+	mov	esp, ebp
+	pop	ebp
+
+	ret
+
+.global inw
+inw:
+	push	ebp
+	mov	ebp, esp
+
+	push	edx
+	mov	eax, 0
+
+	mov	dx, [ebp + 8]
+	in	ax, dx
+
+	pop	edx
+	mov	esp, ebp
+	pop	ebp
+
+	ret
+
+.global ind
+ind:
+	push	ebp
+	mov	ebp, esp
+
+	push	edx
+	mov	eax, 0
+
+	mov	edx, [ebp + 8]
+	in	eax, dx
+
+	pop	edx
 	mov	esp, ebp
 	pop	ebp
 

@@ -14,7 +14,7 @@ extern "C" {
 #[no_mangle]
 #[start]
 unsafe fn rust_entry() -> i32 {
-    let x = 0;
+    let x = 1;
     10 / x
 }
 

@@ -4,21 +4,31 @@
 #include "modules/kernel_modules.h"
 #endif
 
-void div();
+int counter = 0;
 
 void _start() {
+  asm("cli");
   // Mizink main entry point
   int_init();
+  pic_init();
 
   vga_initialize(); 
   //interrupt_initialize();
   //kbc_initialize();
+  asm("sti");
 
   rust_entry();
-  
+
   while(1) {
+    ts_draw_num_16(counter);
+    //ts_count_num();
   }
 }
+
+void ts_count_num() {
+  counter += 1;
+}
+
 
 char ascii_num[] = "0123456789ABCDEF";
 
