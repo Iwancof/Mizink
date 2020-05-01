@@ -1,15 +1,19 @@
+#include "../settings/common_define.h"
 #define INCLUDED_KERNEL_HEADER
 
 struct intr_frame {
-    unsigned int rip;
+    unsigned int eip;
     unsigned int cs;
     unsigned int rflags;
-    unsigned int rsp;
+    unsigned int esp;
     unsigned int ss;
 };
 
 extern unsigned char* FONT_BASE;
-extern unsigned char* PANIC_MESSAGE;
+extern unsigned char PANIC_MESSAGE[];
+extern unsigned char KEY_BUFFER[];
+extern unsigned int KEYBUF_IS_READ;
+extern unsigned char read_point;
 
 // ƒAƒZƒ“ƒuƒŠ‚ÅŽÀ‘•‚³‚ê‚Ä‚é‚â‚Â‚ç
 extern void outb(unsigned short port, unsigned char value);
@@ -21,6 +25,7 @@ extern unsigned int ind(unsigned short port);
 extern void rk_hlt();
 extern void set_idtr(int);
 extern void asm_int_keyboard();
+extern void asm_int_timer();
 
 void vga_set_read_plane(unsigned char place);
 void vga_set_write_plane(unsigned char plane);
@@ -30,6 +35,11 @@ void set_interrupt(int interrupt_number, void(*proc)(void));
 void int_init();
 void pic_init();
 void int_keyboard(struct intr_frame*);
+void int_timer(struct intr_frame*);
+void itoa(unsigned int num, char *dst);
+void itoa_16(unsigned int num, char *dst);
+void timer_set(float time);
+char read_key_buf();
 
 // raw kernel
 void rk_draw_char(unsigned int x, unsigned int y, unsigned short color, unsigned char ch);

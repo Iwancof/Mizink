@@ -5,7 +5,7 @@
 #endif
 
 unsigned char* FONT_BASE = 0;
-unsigned char* PANIC_MESSAGE = 0;
+unsigned char PANIC_MESSAGE[0xFF] = {0};
 
 union xreg {
   struct {

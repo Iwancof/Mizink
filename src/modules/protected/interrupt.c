@@ -1,6 +1,5 @@
 #include "../../settings/common_define.h"
-#include "../kernel_modules.h"
-
+#include "../kernel_modules.h" 
 #define STI
 
 void set_interrupt(int inm, void(*proc)(void)) {
@@ -21,6 +20,8 @@ void int_init() {
   // 割り込み初期設定
   set_interrupt(0, &zero_div);
   set_interrupt(0x21, &asm_int_keyboard);
+  timer_set(0.01f); // timeはミリ秒指定
+  set_interrupt(0x20, &asm_int_timer);
 }
 void pic_init() {
   // PICの初期設定(割り込み許可もここ)
@@ -36,5 +37,5 @@ void pic_init() {
   outb(0xA1, 0x01);
   outb(0xA1, 0xFF);
 
-  outb(0x21, 0b11111001);
+  outb(0x21, 0b11111000);
 }

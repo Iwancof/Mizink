@@ -6,11 +6,18 @@ cd ..
 
 nasm boot.s -o boot.bin -l lists/boot.lst
 
+# c-opt-level
+$c_opt = 0;
+
+# rs-opt-level
+$rs_opt = 0;
+
 # main kernel
-wsl gcc cmain.c -nostdlib -nostdinc -c -O0 -g -m32 -o cmain.o -masm=intel
+$comp_cmain = "wsl gcc cmain.c -nostdlib -nostdinc -c -O" + $c_opt.ToString() + " -g -m32 -o cmain.o -masm=intel -fno-builtin"
+Invoke-Expression $comp_cmain;
 
 # user land in rust
-rustc .\ul.rs --crate-type=staticlib -C lto -C opt-level=0 -C no-prepopulate-passes -Z verbose -Z no-landing-pads --target=i686-unknown-linux-gnu -o .\rmain.o --emit=obj -Ctarget-feature=+soft-float -C relocation-model=dynamic-no-pic
+rustc .\ul.rs --crate-type=staticlib -C lto -C opt-level=$rs_opt -C no-prepopulate-passes -Z verbose -Z no-landing-pads --target=i686-unknown-linux-gnu -o .\rmain.o --emit=obj -Ctarget-feature=+soft-float -C relocation-model=dynamic-no-pic
 
 $list = New-Object `System.Collections.Generic.List[string]`;
 
@@ -22,11 +29,15 @@ $list.Add("modules/protected/asm_wrap.s");
 $list.Add("modules/protected/kernel_panic.c");
 $list.Add("modules/protected/interrupt.c");
 $list.Add("modules/protected/keyboard.c");
+$list.Add("modules/protected/timer.c");
+$list.Add("modules/protected/calc_mod.c");
+$list.Add("modules/protected/memory_ope.c");
 
 $index = 0;
 $cmd = "wsl i686-unknown-linux-gnu-ld -T settings/linker.ld -o cmain.bin rmain.o cmain.o ";
 foreach($e in $list) {
-  wsl gcc $e -c -g -m32 -o obj_$index.o -O0 -nostdlib -nostdinc
+  $comp_obj = "wsl gcc $e -c -g -m32 -o obj_$index.o -O" + $c_opt.ToString() + " -nostdlib -nostdinc -fno-builtin"
+  Invoke-Expression $comp_obj;
   $cmd += "obj_" + $index.ToString() + ".o ";
   $index++;
 }

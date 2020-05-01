@@ -27,7 +27,25 @@ set_idtr:
 
 .global asm_int_keyboard
 asm_int_keyboard:
-	pusha
+	pushad
+	cli
 	call	int_keyboard
+	mov	dx, 0x20
+	mov	al, 0x20
+	out	dx, al
+	sti
+	popad
+	iret
+
+
+.global asm_int_timer
+asm_int_timer:
+	pusha
+	cli
+	call	int_timer
+	mov	dx, 0x20
+	mov	al, 0x20
+	out	dx, al
+	sti
 	popa
 	iret

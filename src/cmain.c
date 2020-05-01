@@ -7,21 +7,20 @@
 int counter = 0;
 
 void _start() {
-  asm("cli");
   // Mizink main entry point
+  asm("cli");
+  vga_initialize(); 
   int_init();
   pic_init();
 
-  vga_initialize(); 
   //interrupt_initialize();
   //kbc_initialize();
   asm("sti");
 
   rust_entry();
+  ts_draw_num_16((int)&KEYBUF_IS_READ);
 
   while(1) {
-    ts_draw_num_16(counter);
-    //ts_count_num();
   }
 }
 
@@ -52,4 +51,5 @@ void ts_draw_num_16(unsigned int x) {
   }
   rk_draw_str(0, 10, 0x010F, buf);
 }
+
 
