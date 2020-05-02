@@ -32,6 +32,7 @@ $list.Add("modules/protected/keyboard.c");
 $list.Add("modules/protected/timer.c");
 $list.Add("modules/protected/calc_mod.c");
 $list.Add("modules/protected/memory_ope.c");
+$list.Add("modules/protected/interrupt_task.c");
 
 $index = 0;
 $cmd = "wsl i686-unknown-linux-gnu-ld -T settings/linker.ld -o cmain.bin rmain.o cmain.o ";

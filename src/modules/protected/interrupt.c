@@ -19,6 +19,7 @@ void zero_div() {
 void int_init() {
   // 割り込み初期設定
   set_interrupt(0, &zero_div);
+  keyboard_init();
   set_interrupt(0x21, &asm_int_keyboard);
   timer_set(0.01f); // timeはミリ秒指定
   set_interrupt(0x20, &asm_int_timer);

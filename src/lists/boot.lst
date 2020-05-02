@@ -18,9 +18,6 @@
     14                              <1> VGA_SEQ_DAT	equ	0x03C5
     15                              <1> VGA_GRA_ADR	equ	0x03CE
     16                              <1> VGA_GRA_DAT	equ	0x03CF
-    17                              <1> KEY_BUFFER_LIMIT	equ	0xF
-    18                              <1> TRUE	equ	1
-    19                              <1> FALSE	equ	0
      5                                  %include	"settings/macro.s"
      1                              <1> %macro	cdecl	1-*.nolist
      2                              <1> 	%rep	%0 - 1

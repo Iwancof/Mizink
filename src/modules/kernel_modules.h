@@ -8,12 +8,25 @@ struct intr_frame {
     unsigned int esp;
     unsigned int ss;
 };
+typedef struct {
+  int v;
+} event_args ;
 
+typedef struct {
+  int t_id;
+  // -1の時はNULL taskとする
+  int (*event_fp)(event_args, char*);
+  // char*は呼び出し元
+} task_unit;
+
+typedef struct {
+  task_unit tasks[16];
+} task_pool;
+
+struct event_args;
 extern unsigned char* FONT_BASE;
 extern unsigned char PANIC_MESSAGE[];
-extern unsigned char KEY_BUFFER[];
-extern unsigned int KEYBUF_IS_READ;
-extern unsigned char read_point;
+extern char* current_task_name;
 
 // アセンブリで実装されてるやつら
 extern void outb(unsigned short port, unsigned char value);
@@ -40,6 +53,11 @@ void itoa(unsigned int num, char *dst);
 void itoa_16(unsigned int num, char *dst);
 void timer_set(float time);
 char read_key_buf();
+void keyboard_init();
+void init_task(task_pool*);
+int subscribe(task_pool*, int (*fp)(event_args, char*));
+void broadcast(task_pool*, event_args);
+void cancel(task_pool*, int);
 
 // raw kernel
 void rk_draw_char(unsigned int x, unsigned int y, unsigned short color, unsigned char ch);

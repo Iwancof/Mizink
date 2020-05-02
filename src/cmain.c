@@ -18,7 +18,6 @@ void _start() {
   asm("sti");
 
   rust_entry();
-  ts_draw_num_16((int)&KEYBUF_IS_READ);
 
   while(1) {
   }

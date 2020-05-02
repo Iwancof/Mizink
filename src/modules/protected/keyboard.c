@@ -1,33 +1,31 @@
 #include "../kernel_modules.h"
 #include "../../settings/common_define.h"
 
-unsigned char KEY_BUFFER[KEY_BUFFER_LIMIT] = {0};
-unsigned char read_point = 0, write_point = 0;
-unsigned int KEYBUF_IS_READ = FALSE;
+task_pool keyboard_pool = {.tasks = {0} };
+char kernel_task_name[] = "KEYBOARD:KERNEL";
+int kernel_proc(event_args ar, char* s);
 
-void  write_key_buf(char);
+int id;
+
+void keyboard_init() {
+  //ts_draw_num_16((int)&keyboard_pool);
+  init_task(&keyboard_pool);
+  current_task_name = kernel_task_name;
+  id = subscribe(&keyboard_pool, &kernel_proc);
+}
+
+int kernel_proc(event_args ar, char* s) {
+  rk_draw_str(0, 0, 0x010F, s);
+  ts_draw_num_16(ar.v);
+  cancel(&keyboard_pool, id);
+}
 
 void int_keyboard(struct intr_frame *frame) {
   char k = inb(0x60);
-  write_key_buf(k);
+  event_args ar = { .v = k };
+  broadcast(&keyboard_pool, ar);
 }
 
-void write_key_buf(char x) {
-  if(write_point + 1 == read_point) {
-    kernel_panic();
-    // バッファがいっぱい
-  }
-  KEY_BUFFER[write_point] = x;
-  write_point += 1;  
-}
-char read_key_buf(void) {
-  if(read_point == write_point) {
-    KEYBUF_IS_READ = FALSE;
-    return -1;
-  }
-  KEYBUF_IS_READ = TRUE;
-  return KEY_BUFFER[read_point++];
-}
 
 
 
