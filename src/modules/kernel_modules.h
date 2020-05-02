@@ -43,6 +43,7 @@ extern void asm_int_timer();
 void vga_set_read_plane(unsigned char place);
 void vga_set_write_plane(unsigned char plane);
 void vram_font_copy(unsigned char* font_adr, unsigned char* vram_adr, unsigned char plane, unsigned short color);
+void vram_bit_copy(unsigned char bit_pattern,unsigned char* vram_adr,unsigned char plane,unsigned short color);
 void vga_initialize(); 
 void set_interrupt(int interrupt_number, void(*proc)(void));
 void int_init();
@@ -62,6 +63,7 @@ void cancel(task_pool*, int);
 // raw kernel
 void rk_draw_char(unsigned int x, unsigned int y, unsigned short color, unsigned char ch);
 void rk_draw_str(unsigned int x,unsigned int y, unsigned short color, char* str);
+void rk_draw_pixel(unsigned int x,unsigned int y , unsigned short color);
 
 // Rustのためのインターフェース
 int rust_entry();

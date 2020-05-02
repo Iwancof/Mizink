@@ -34,3 +34,23 @@ void rk_draw_str(unsigned int x,unsigned int y, unsigned short color, char* str)
     x %= 80;
   }
 }
+
+void rk_draw_pixel(unsigned int x,unsigned int y , unsigned short color) {
+  // vramアドレスを計算する
+  char *vram_adr = VGA_IO_MEM_BASE + (x >> 3) + y * 80;
+  char bit_ptn = 1 << (7 - (x & 7));
+
+  vga_set_read_plane(0x03);
+  vga_set_write_plane(0x08);
+  vram_bit_copy(bit_ptn, vram_adr, 0x08, color);
+  vga_set_read_plane(0x02);
+  vga_set_write_plane(0x04);
+  vram_bit_copy(bit_ptn, vram_adr, 0x04, color);
+  vga_set_read_plane(0x01);
+  vga_set_write_plane(0x02);
+  vram_bit_copy(bit_ptn, vram_adr, 0x02, color);
+  
+  vga_set_read_plane(0x00);
+  vga_set_write_plane(0x01);
+  vram_bit_copy(bit_ptn, vram_adr, 0x01, color);
+}

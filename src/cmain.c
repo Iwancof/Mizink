@@ -20,7 +20,9 @@ void _start() {
   rust_entry();
 
   while(1) {
-    ts_draw_num_10(counter);
+    //ts_draw_num_10(counter);
+    counter++;
+    rk_draw_pixel(counter, 100, 0x0405);
   }
 }
 

@@ -29,6 +29,6 @@ void timer_set(float time) {
 }
 
 int kernel_timer_proc(event_args ar, char* s) {
-  ts_count_num();
+  //ts_count_num();
   // 
 }

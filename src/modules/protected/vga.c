@@ -56,6 +56,15 @@ void vram_font_copy(unsigned char* font_adr, unsigned char* vram_adr, unsigned c
   }
 }
 
+void vram_bit_copy(unsigned char bit_pattern, unsigned char* vram_adr, unsigned char plane, unsigned short col) {
+  char back_mask = ((plane & (col & 0x0F)) == 0) - 1;
+  // 選択中のプレーンが色(フォワード)と一致しているかどうか
+  // 該当するなら(plane & (col & 0xF))が0じゃないのでback_mask = 0xFF
+  char anti_pattern = ~bit_pattern;
+  *vram_adr = (back_mask & bit_pattern) | (anti_pattern & *vram_adr);
+  // 既存のデータと合わせて出力
+}
+
 void vga_initialize() {
   int font_segment = *(short*)(BOOT_LOAD + SECT_SIZE);
   int font_offset = *(short*)(BOOT_LOAD + SECT_SIZE + 2);
