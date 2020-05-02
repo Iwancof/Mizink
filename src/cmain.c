@@ -20,6 +20,7 @@ void _start() {
   rust_entry();
 
   while(1) {
+    ts_draw_num_10(counter);
   }
 }
 

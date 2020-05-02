@@ -2,28 +2,32 @@
 #include "../../settings/common_define.h"
 
 task_pool keyboard_pool = {.tasks = {0} };
-char kernel_task_name[] = "KEYBOARD:KERNEL";
-int kernel_proc(event_args ar, char* s);
+char kernel_keyboard_task_name[] = "KEYBOARD:KERNEL";
+int kernel_keyboard_proc(event_args ar, char* s);
 
 int id;
 
 void keyboard_init() {
   //ts_draw_num_16((int)&keyboard_pool);
   init_task(&keyboard_pool);
-  current_task_name = kernel_task_name;
-  id = subscribe(&keyboard_pool, &kernel_proc);
+  id = subscribe(&keyboard_pool, &kernel_keyboard_proc);
 }
 
-int kernel_proc(event_args ar, char* s) {
+int kernel_keyboard_proc(event_args ar, char* s) {
+  /*
   rk_draw_str(0, 0, 0x010F, s);
   ts_draw_num_16(ar.v);
   cancel(&keyboard_pool, id);
+  */
 }
 
 void int_keyboard(struct intr_frame *frame) {
+  char *task_name_tmp = current_task_name;
+  current_task_name = kernel_keyboard_task_name;
   char k = inb(0x60);
   event_args ar = { .v = k };
   broadcast(&keyboard_pool, ar);
+  current_task_name = task_name_tmp;
 }
 
 
