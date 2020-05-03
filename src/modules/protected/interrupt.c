@@ -39,4 +39,5 @@ void pic_init() {
   outb(0xA1, 0xFF);
 
   outb(0x21, 0b11111000);
+  outb(0xA1, 0b11111111);
 }

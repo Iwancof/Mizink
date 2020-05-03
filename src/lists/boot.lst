@@ -10,14 +10,15 @@
      6                              <1> BOOT_SIZE	equ	1024*8
      7                              <1> BOOT_SECT	equ	BOOT_SIZE/SECT_SIZE
      8                              <1> BOOT_END	equ	BOOT_LOAD+BOOT_SIZE
-     9                              <1> KERNEL_LOAD	equ	0x0001_0000
-    10                              <1> KERNEL_SIZE	equ	0x0000_6000
+     9                              <1> KERNEL_LOAD	equ	0x00010000
+    10                              <1> KERNEL_SIZE	equ	0x00006000
     11                              <1> KERNEL_SECT	equ	KERNEL_SIZE/SECT_SIZE
     12                              <1> KERNEL_END	equ	KERNEL_LOAD+KERNEL_SIZE
     13                              <1> VGA_SEQ_ADR	equ	0x03C4
     14                              <1> VGA_SEQ_DAT	equ	0x03C5
     15                              <1> VGA_GRA_ADR	equ	0x03CE
     16                              <1> VGA_GRA_DAT	equ	0x03CF
+    17                              <1> HEAP_START	equ	0x00030000
      5                                  %include	"settings/macro.s"
      1                              <1> %macro	cdecl	1-*.nolist
      2                              <1> 	%rep	%0 - 1

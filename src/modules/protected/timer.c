@@ -8,12 +8,12 @@ int kernel_timer_proc(event_args ar, char* s);
 
 void int_timer(struct intr_frame *frame) {
   char *task_name_tmp = current_task_name;
-
   event_args ar = {.v = 0};
-  // タイマーの関数に引数って必要？？
+  // タイマーの関数に引数って必要ないよね
   broadcast(&timer_pool, ar);
-
   current_task_name = task_name_tmp;
+
+  // タスクスイッチ
 }
 
 void timer_set(float time) {
@@ -29,6 +29,5 @@ void timer_set(float time) {
 }
 
 int kernel_timer_proc(event_args ar, char* s) {
-  //ts_count_num();
-  // 
+
 }

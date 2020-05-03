@@ -2,7 +2,6 @@
 #include "../../settings/common_define.h"
 
 task_pool keyboard_pool = {.tasks = {0} };
-char kernel_keyboard_task_name[] = "KEYBOARD:KERNEL";
 int kernel_keyboard_proc(event_args ar, char* s);
 
 int id;
@@ -22,12 +21,9 @@ int kernel_keyboard_proc(event_args ar, char* s) {
 }
 
 void int_keyboard(struct intr_frame *frame) {
-  char *task_name_tmp = current_task_name;
-  current_task_name = kernel_keyboard_task_name;
   char k = inb(0x60);
   event_args ar = { .v = k };
   broadcast(&keyboard_pool, ar);
-  current_task_name = task_name_tmp;
 }
 
 

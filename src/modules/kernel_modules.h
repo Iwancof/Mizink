@@ -23,6 +23,12 @@ typedef struct {
   task_unit tasks[16];
 } task_pool;
 
+typedef struct list_s rk_vec;
+struct list_s {
+  rk_vec *next;
+  void *element;
+};
+
 struct event_args;
 extern unsigned char* FONT_BASE;
 extern unsigned char PANIC_MESSAGE[];
@@ -59,6 +65,11 @@ void init_task(task_pool*);
 int subscribe(task_pool*, int (*fp)(event_args, char*));
 void broadcast(task_pool*, event_args);
 void cancel(task_pool*, int);
+void* malloc(const int);
+void free(void*);
+void* memcpy(void* dst, void* src, unsigned int size);
+rk_vec* list_new();
+void list_add(rk_vec **list, void* element_ptr, int size);
 
 // raw kernel
 void rk_draw_char(unsigned int x, unsigned int y, unsigned short color, unsigned char ch);

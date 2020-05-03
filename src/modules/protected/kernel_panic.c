@@ -2,7 +2,7 @@
 #include "../kernel_modules.h"
 #endif
 
-void kernel_panic() {
+_Noreturn void kernel_panic() {
   rk_draw_str(37, 20, 0x0400, "PANIC");
 
   do {

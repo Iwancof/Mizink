@@ -7,10 +7,10 @@ cd ..
 nasm boot.s -o boot.bin -l lists/boot.lst
 
 # c-opt-level
-$c_opt = 0;
+$c_opt = 3;
 
 # rs-opt-level
-$rs_opt = 0;
+$rs_opt = 3;
 
 # main kernel
 $comp_cmain = "wsl gcc cmain.c -nostdlib -nostdinc -c -O" + $c_opt.ToString() + " -g -m32 -o cmain.o -masm=intel -fno-builtin"
@@ -33,6 +33,7 @@ $list.Add("modules/protected/timer.c");
 $list.Add("modules/protected/calc_mod.c");
 $list.Add("modules/protected/memory_ope.c");
 $list.Add("modules/protected/interrupt_task.c");
+$list.Add("modules/protected/vector.c");
 
 $index = 0;
 $cmd = "wsl i686-unknown-linux-gnu-ld -T settings/linker.ld -o cmain.bin rmain.o cmain.o ";

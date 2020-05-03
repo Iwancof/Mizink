@@ -5,6 +5,7 @@
 #endif
 
 int counter = 0;
+char kernel_keyboard_task_name[] = "KEYBOARD:KERNEL";
 
 void _start() {
   // Mizink main entry point
@@ -15,15 +16,18 @@ void _start() {
 
   //interrupt_initialize();
   //kbc_initialize();
+  char *task_name_tmp = current_task_name;
+  current_task_name = kernel_keyboard_task_name;
   asm("sti");
-
+ 
   rust_entry();
 
   while(1) {
-    //ts_draw_num_10(counter);
-    counter++;
-    rk_draw_pixel(counter, 100, 0x0405);
   }
+
+  asm("cli");
+  current_task_name = task_name_tmp;
+  asm("sti");
 }
 
 void ts_count_num() {
