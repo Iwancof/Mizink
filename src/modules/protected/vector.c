@@ -74,17 +74,13 @@ rk_vec* list_copy(rk_vec* src, int size) {
   if(src == NULL) {
     return NULL;
   }
-  rk_vec **cur = NULL, **ret = cur;
+  rk_vec *ret = list_new(), **cur = &ret;
   while(src != NULL) {
-    (*cur) = (rk_vec*)malloc(sizeof(rk_vec));
-    (*cur)->element = (void*)malloc(size);
-    memcpy((*cur)->element, src->element, size);
-    cur = &((*cur)->next);
-
+    list_add(cur, src->element, size);
+    cur = &(*cur)->next;
     src = src->next;
   }
-  (*cur) = NULL;
-  return *ret;
+  return ret;
 }
 void list_free(rk_vec* src) {
   while(src != NULL) {
