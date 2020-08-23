@@ -17,6 +17,7 @@ void zero_div() {
 }
 
 void int_init() {
+
   // 割り込み初期設定
   set_interrupt(0, &zero_div);
   keyboard_init();

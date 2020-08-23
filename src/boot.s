@@ -51,7 +51,7 @@ ipl:	cli	; 割り込み禁止
 	; どこから　読むか
 	cdecl	read_chs, BOOT_DRIVE, bx, cx
 	; AX = (呼んだセクタ数)
-
+	
 	cmp	ax, bx
 	je	.10E	; 成功
 	
@@ -145,7 +145,9 @@ main_boot_program:
 	jz	.30E
 	cdecl	puts, errmsg_read_kernel
 	call	reboot
+
 .30E:
+
 	; カーネルの読み込みが完了
 	; Protected-Modeへの移行を開始
 
@@ -157,7 +159,7 @@ main_boot_program:
 	or	eax, 1
 	; Protected-Mode有効化ビットを立てる
 	mov	cr0, eax
-
+	
 	jmp	$ + 2
 	; パイプラインの内容を破棄
 
@@ -179,6 +181,7 @@ CODE_32:
 	mov	ebx, 0x00088E00
 	xchg	ax, bx
 
+
 	mov	ecx, 256
 	mov	edi, VECT_BASE
 .40L:
@@ -189,6 +192,7 @@ CODE_32:
 
 	lidt	[BOOT_END - 0x10]
 
+
 	; BOOT_ENDに追加されたメモリをKERNEL領域に書き込む
 	mov	ecx, (KERNEL_SIZE) / 4
 	; バイト数を取得
@@ -197,7 +201,7 @@ CODE_32:
 	mov	edi, KERNEL_LOAD
 	cld
 	rep	movsd
-
+	
 	jmp	[KERNEL_LOAD]
 
 s0:	db	"--------", 0
@@ -206,6 +210,7 @@ s1:	db	"--------", 0
 default_panic:
 	jmp	$
 
+MSG:	db	"TEST MESSAGE", 0
 
 ALIGN	4,	db	0
 ; 一時的なGDTを作成

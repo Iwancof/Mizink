@@ -24,10 +24,13 @@ pub struct rk_vec {
     pub next : *mut rk_vec,
     pub element : *mut c_void,
 }
-
+pub static mut null_rk : rk_vec = rk_vec {
+    next : 0 as *mut rk_vec,
+    element : 0 as *mut c_void,
+};
 pub struct Vec<T : Clone> {
-    v : *mut rk_vec,
-    phantom : PhantomData<T>,
+    pub v : *mut rk_vec,
+    pub phantom : PhantomData<T>,
 }
 impl<T : Clone> Vec<T> {
     pub fn new() -> Self {

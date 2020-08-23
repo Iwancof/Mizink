@@ -10,7 +10,7 @@ nasm boot.s -o boot.bin -l lists/boot.lst
 $c_opt = 3;
 
 # rs-opt-level
-$rs_opt = 3;
+$rs_opt = 0;
 
 # main kernel
 $comp_cmain = "wsl gcc cmain.c -nostdlib -nostdinc -c -O" + $c_opt.ToString() + " -g -m32 -o cmain.o -masm=intel -fno-builtin"

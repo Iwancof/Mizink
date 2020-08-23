@@ -27,7 +27,9 @@ void timer_set(float time) {
   subscribe(&timer_task_pool, &kernel_timer_proc);
 
   outb(0x43, 0b00110100);
+
   int set_value = IN_TIMER_COUNT * time;
+
   outb(0x40, set_value & 0x00FF);
   // ‰ºˆÊƒrƒbƒg
   outb(0x40, set_value >> 8);

@@ -1,13 +1,12 @@
 
-ENTRY(_start)
+ENTRY(mizink_main)
 OUTPUT_FORMAT("binary")
 /* _GLOBAL_OFFSET_TABLE(0) */
-
 
 SECTIONS {
 	.head	0x00010000:
 	AT(0) {
-	 	LONG(_start)
+	 	LONG(mizink_main)
 	}
 
 	.text 0x0010000 + SIZEOF(.head):

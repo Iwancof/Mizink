@@ -7,7 +7,8 @@
 int counter = 0;
 char kernel_keyboard_task_name[] = "KEYBOARD:KERNEL";
 
-void _start() {
+void mizink_main() {
+
   // Mizink main entry point
   asm("cli");
   vga_initialize(); 
@@ -19,6 +20,10 @@ void _start() {
   char *task_name_tmp = current_task_name;
   current_task_name = kernel_keyboard_task_name;
   asm("sti");
+
+  //kernel_panic();
+  
+  rk_draw_str(0, 10, 0x010F, "Hello");
  
   rust_entry();
 
@@ -26,7 +31,7 @@ void _start() {
   }
 
   asm("cli");
-  current_task_name = task_name_tmp;
+  //current_task_name = task_name_tmp;
   asm("sti");
 }
 
@@ -58,4 +63,11 @@ void ts_draw_num_16(unsigned int x) {
   rk_draw_str(0, 10, 0x010F, buf);
 }
 
+float __mulsf3(float x, float y) {
+  return 0.f;
+}
+
+float __fixsfsi(float x) {
+  return x;
+}
 
