@@ -28,7 +28,7 @@ extern fn eh_personality() {}
 #[start]
 unsafe fn rust_entry() -> i32 {
     rk_draw_str(10, 10, 0x010F, b"Hello from Rust".as_ptr());
-    0
+    9
 }
 
 #[panic_handler]

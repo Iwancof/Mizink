@@ -4,6 +4,8 @@
 MODULES	=	modules
 PROTMOD	=	$(MODULES)/protected
 LISTINGFILE =	lists
+SETTINGSFILE =	settings
+
 
 PROTECTED_MODULE_CFLAGS	=	-O0	\
 				-c -g -m32	\
@@ -27,6 +29,7 @@ PROTECTED_MODULES	=	out.o			\
 				memory_ope.o		\
 				interrupt_task.o	\
 				vector.o		\
+				string.o		\
 
 ASM_BOOT_MAIN		=	boot.s
 C_KERNEL_MAIN		=	cmain.c
@@ -73,9 +76,10 @@ interrupt_task.o:
 	gcc	-o $@ $(PROTMOD)/$*.c $(PROTECTED_MODULE_CFLAGS) 
 vector.o:		
 	gcc	-o $@ $(PROTMOD)/$*.c $(PROTECTED_MODULE_CFLAGS) 
-
+string.o:		
+	gcc	-o $@ $(PROTMOD)/$*.c $(PROTECTED_MODULE_CFLAGS) 
 c_kernel.bin:	$(PROTECTED_MODULES) cmain.o rmain.o
-	i686-unknown-linux-gnu-ld -o $@  -T settings/linker.ld cmain.o rmain.o $(PROTECTED_MODULES)
+	i686-unknown-linux-gnu-ld -o $@  -T $(SETTINGSFILE)/linker.ld cmain.o rmain.o $(PROTECTED_MODULES)
 
 Mizink:	c_kernel.bin boot.bin
 	touch Mizink.img

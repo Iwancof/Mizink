@@ -6,9 +6,11 @@
 
 int counter = 0;
 char kernel_keyboard_task_name[] = "KEYBOARD:KERNEL";
+char ascii_num[] = "0123456789ABCDEF";
+
+void log(char* data);
 
 void mizink_main() {
-
   // Mizink main entry point
   asm("cli");
   vga_initialize(); 
@@ -21,11 +23,22 @@ void mizink_main() {
   current_task_name = kernel_keyboard_task_name;
   asm("sti");
 
-  //kernel_panic();
-  
-  rk_draw_str(0, 10, 0x010F, "Hello");
- 
-  rust_entry();
+  rk_draw_str(20, 0, 0x020F, "Mizink kernel loaded. Hello.");
+
+  log("Load rust entry...");
+
+  int value = rust_entry();
+
+  log(format("Rust entry returns ... %d", value));
+  log(format("char ! %c..", 'A'));
+
+  unsigned int per_n_test;
+  log("");
+  log("");
+  log("");
+  log(format("Hello world %n", &per_n_test));
+  log(format("Value is %d.", per_n_test));
+
 
   while(1) {
   }
@@ -39,8 +52,12 @@ void ts_count_num() {
   counter += 1;
 }
 
+int log_counter = 1;
+void log(char* data) {
+  rk_draw_str(1, log_counter, 0x040F, data);
+  log_counter++;
+}
 
-char ascii_num[] = "0123456789ABCDEF";
 
 void ts_draw_num_10(unsigned int x) {
   char buf[] = "------------";

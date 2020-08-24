@@ -70,6 +70,8 @@ void free(void*);
 void* memcpy(void* dst, void* src, unsigned int size);
 rk_vec* list_new();
 void list_add(rk_vec **list, void* element_ptr, int size);
+char* format(char*, ...);
+
 
 // raw kernel
 void rk_draw_char(unsigned int x, unsigned int y, unsigned short color, unsigned char ch);
